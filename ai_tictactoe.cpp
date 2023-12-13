@@ -4,10 +4,125 @@
 using namespace std;
 
 char key = 'y'; 
-bool gameover = false; 
 const int Size_of_board = 3;
-
 char board[Size_of_board][Size_of_board];
+
+// Function declarations
+void set_board(); 
+void demo_board(); 
+void display_board();
+void get_move(int& row, int& col, char player_mark);
+void update_board(int row, int col, char player_mark);
+int win_condition(char player_mark);
+void clear_screen();
+bool is_board_full();
+int minimax(char,int,int,int);
+void get_ai_move();
+
+int main() {
+    demo_board();
+    cout << "\n----This is how the indexing is done in the game so choose accordingly----" <<endl<<endl;
+    
+    char key;
+    do {
+        int row, col;
+        char player_mark = 'X';
+        set_board();
+        int winner = 0;
+
+        cout << "Choose mode:" << endl;
+        cout << "1. Multiplayer" << endl;
+        cout << "2. Single Player (vs AI)" << endl;
+        int mode;
+        cin >> mode;
+
+        switch (mode) {
+            case 1:
+                while (!winner && !is_board_full()) {
+                    clear_screen();
+                    display_board();
+
+                    if (player_mark == 'X')
+                        cout << "Player 1's turn:" <<endl;
+                    else
+                        cout << "Player 2's turn:" <<endl;
+
+                    get_move(row, col, player_mark);
+                    update_board(row, col, player_mark);
+
+                    winner = win_condition(player_mark);
+
+                    if (winner == 1) {
+                        display_board();
+                        if (player_mark == 'X')
+                            cout << "Player 1 won the game " <<endl;
+                        else
+                            cout << "Player 2 won the game" <<endl;
+                    }
+                    else if (is_board_full()) {
+                        display_board();
+                        cout << "The game is a draw!" <<endl;
+                    }
+
+                    if (!winner) {
+                        if (player_mark == 'X')
+                        player_mark = 'O';
+                    	else
+                        player_mark = 'X';
+                    }
+                }
+                break;
+
+            case 2:
+                while (!winner && !is_board_full()) {
+                    clear_screen();
+                    display_board();
+
+                    if (player_mark == 'X') {
+                        cout << "Your turn:" << std::endl;
+                        get_move(row, col, player_mark);
+                        update_board(row, col, player_mark);
+                    }
+                    else {
+                        cout << "AI's turn:" << endl;
+                        get_ai_move();
+                    }
+
+                    winner = win_condition(player_mark);
+
+                    if (winner == 1) {
+                        display_board();
+                        if (player_mark == 'X')
+                            cout << "You won the game " <<endl;
+                        else
+                            cout << "AI won the game" <<endl;
+                    }
+                    else if (is_board_full()) {
+                        display_board();
+                        cout << "The game is a draw!" <<endl;
+                    }
+
+                    if (!winner) {
+                        if (player_mark == 'X')
+                        player_mark = 'O';
+                    	else
+                        player_mark = 'X';
+                    }
+                }
+                break;
+
+            default:
+                cout << "Invalid choice. Please enter a valid option" << endl;
+                break;
+        }
+
+        cout << "\nWanna play again? (y/n): ";
+        cin >> key;
+
+    } while (key == 'y' || key == 'Y');
+
+    return 0;
+}
 
 // Function to initialize the Tic Tac Toe board
 void set_board() {
@@ -179,11 +294,6 @@ bool is_board_full() {
     return true;
 }
 
-// Function to check if the game is over
-bool is_game_over() {
-    return win_condition('X') || win_condition('O') || is_board_full();
-}
-
 // Function to perform the AI move using the minimax algorithm with alpha-beta pruning
 int minimax(char player_mark, int depth, int alpha, int beta) {
     if (win_condition('X')) {
@@ -255,143 +365,5 @@ void get_ai_move() {
             }
         }
     }
-
     board[best_move_row][best_move_col] = 'O';
 }
-
-bool ask_to_play_again() {
-    char key;
-    cout << "Do you want to play again? (Y/N): ";
-    cin >> key;
-    clear_screen();
-
-    // Return true if the user wants to play again, false otherwise
-    return (key == 'y' || key == 'Y');
-}
-
-void gameover_msg(){
-	cout<<"\nGame-over.. Wanna play again\n:"; 
-	cin>>key;
-}
-
-int main() {
-    demo_board(); 
-    cout << "\n----This is how the indexing is done in the game so choose accordingly----" << endl << endl; 
-    while (key == 'y') {
-        int row, col;
-        char player_mark = 'X';
-        set_board();
-        int winner = 0; 
-
-        cout << "Choose mode:" << endl;
-        cout << "1. Multiplayer" << endl;
-        cout << "2. Single Player (vs AI)" << endl;
-
-        int mode;
-        cin >> mode;
-
-        if (mode == 1) {
-            cout << endl;
-            while (!gameover) {
-                clear_screen();
-                display_board();
-                if (player_mark == 'X')
-                    cout << "Player 1's turn:" << endl;
-                else
-                    cout << "Player 2's turn:" << endl;
-                get_move(row, col, player_mark);
-                update_board(row, col, player_mark);
-
-                winner = win_condition(player_mark);
-                if (winner == 1) {
-                    display_board();
-                    if (player_mark == 'X')
-                        cout << "Player 1 won the game " << endl;
-                    else
-                        cout << "Player 2 won the game" << endl;
-
-                    cout << endl << endl;
-
-                    cout << "Do you want to play again Y/N: ";
-                    cin >> key;
-                    gameover = !ask_to_play_again();  
-                    if (!gameover) {
-                        break;  
-                    }
-                } else if (is_board_full()) {
-                    display_board();
-                    cout << "The game is a draw!" << endl;
-
-                    cout << endl << endl;
-
-                    cout << "Do you want to play again Y/N: ";
-                    cin >> key;
-                    gameover = !ask_to_play_again();  
-                    if (!gameover) {
-                        break;  
-                    }
-                }
-
-                if (!gameover) {
-                    if (player_mark == 'X')
-                        player_mark = 'O';
-                    else
-                        player_mark = 'X';
-                }
-            }
-            gameover_msg(); 
-        } else if (mode == 2) {
-            while (!gameover) {
-                clear_screen();
-                display_board();
-                if (player_mark == 'X') {
-                    cout << "Your turn:" << endl;
-                    get_move(row, col, player_mark);
-                    update_board(row, col, player_mark);
-                } else {
-                    cout << "AI's turn:" << endl;
-                    get_ai_move();
-                }
-
-                winner = win_condition(player_mark);
-                if (winner == 1) {
-                    display_board();
-                    if (player_mark == 'X')
-                        cout << "You won the game " << endl;
-                    else 
-                        cout << "AI won the game" << endl;
-
-                    cout << endl << endl;
-
-                    cout << "Do you want to play again Y/N: ";
-                    cin >> key;
-                    gameover = !ask_to_play_again();  // Update the gameover flag
-                    if (!gameover) {
-                        break;  // Exit the loop if the user doesn't want to play again
-                    }
-                } else if (is_board_full()) {
-                    display_board();
-                    cout << "The game is a draw!" << endl;
-
-                    cout << endl << endl;
-
-                    cout << "Do you want to play again Y/N: ";
-                    cin >> key;
-                    gameover = !ask_to_play_again(); 
-                    if (!gameover) {
-                        break;  
-                    }
-                }
-                if (!gameover) {
-                    if (player_mark == 'X')
-                        player_mark = 'O';
-                    else
-                        player_mark = 'X';
-                }
-            }
-            gameover_msg();
-        }
-    }
-    return 0;
-}
-
