@@ -1,12 +1,13 @@
 #include <iostream>
 #include <cstdlib>
 #include <climits>
+#include<windows.h>
 using namespace std;
-
+int best_move_row; 
+int best_move_col; 
 char key = 'y'; 
 const int Size_of_board = 3;
 char board[Size_of_board][Size_of_board];
-
 // Function declarations
 void set_board(); 
 void demo_board(); 
@@ -16,12 +17,15 @@ void update_board(int row, int col, char player_mark);
 int win_condition(char player_mark);
 void clear_screen();
 bool is_board_full();
+//void AI_prev_move(int, int );
 int minimax(char,int,int,int);
 void get_ai_move();
+
 
 int main() {
     demo_board();
     cout << "\n----This is how the indexing is done in the game so choose accordingly----" <<endl<<endl;
+    cout<<"Initially MINMAX search from 1st row 1st coloumn, so it may show that before playing.."<<endl<<endl; 
     
     char key;
     do {
@@ -79,13 +83,14 @@ int main() {
                     display_board();
 
                     if (player_mark == 'X') {
-                        cout << "Your turn:" << std::endl;
+                        cout << "Your turn:" << endl;
+                        cout<<"The row*col move of AI was ["<<best_move_row + 1<<"]["<<best_move_col + 1 <<"]"<<endl; 
                         get_move(row, col, player_mark);
                         update_board(row, col, player_mark);
                     }
                     else {
-                        cout << "AI's turn:" << endl;
-                        get_ai_move();
+                        cout <<endl<< "AI thinking...." << endl;
+                        get_ai_move();       
                     }
 
                     winner = win_condition(player_mark);
@@ -176,7 +181,6 @@ void display_board() {
         }
     }
 }
-
 // Function to get player move input
 void get_move(int& row, int& col, char player_mark) {
     if (player_mark == 'X') {
@@ -231,7 +235,8 @@ void get_move(int& row, int& col, char player_mark) {
             get_move(row, col,player_mark); // Recursive call to get a valid move
             return;
     }
-
+	
+	//
     row--; // initializing base index to 0
     col--;
 
@@ -346,8 +351,8 @@ int minimax(char player_mark, int depth, int alpha, int beta) {
 
 // Function to get the AI move
 void get_ai_move() {
-    int best_move_row = -1;
-    int best_move_col = -1;
+    best_move_row = -1;
+    best_move_col = -1;
     int best_eval = INT_MIN;
 
     for (int i = 0; i < Size_of_board; i++) {
@@ -361,9 +366,11 @@ void get_ai_move() {
                     best_eval = eval;
                     best_move_row = i;
                     best_move_col = j;
+                    
                 }
             }
         }
     }
     board[best_move_row][best_move_col] = 'O';
+    sleep(1); 
 }
